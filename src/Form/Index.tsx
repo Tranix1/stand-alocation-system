@@ -1,6 +1,27 @@
 import React from "react";
+import {db} from "../config/firebase"
+import { collection, addDoc } from "firebase/firestore";
 
 export default function ApplicationForm() {
+
+
+async function addDpc(event: React.MouseEvent<HTMLButtonElement>) {
+  event.preventDefault();
+alert("hiiiiiii")
+  try {
+    console.log("hiiiiii")
+    const nameCollection = collection(db, "pana");
+    const docRef = await addDoc(nameCollection, {
+      userId: "yaya"
+    });
+    console.log("Document written with ID:", docRef.id);
+    alert("Form submitted!");
+  } catch (error) {
+    console.error("Error adding document: ", error);
+    alert("Submission failed. Try again.");
+  }
+}
+
   return (
     <div style={containerStyle}>
       <h2 style={headerStyle}>Harare City Council Stand Application Form</h2>
@@ -82,7 +103,8 @@ export default function ApplicationForm() {
         * False information leads to disqualification or repossession of the stand.
       </p>
 
-      <button style={submitBtnStyle}>Submit Application</button>
+      <button style={submitBtnStyle} onClick={addDpc}  >Submit and Make payment</button>
+      
     </div>
   );
 }
