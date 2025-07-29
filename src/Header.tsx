@@ -1,7 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
+import logo from "./assets/HomeImages/images (1).jpeg";
 
 export default function Header() {
   const [showContactMenu, setShowContactMenu] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [showSearchMenu, setShowSearchMenu] = useState(false);
+
+  const searchInputRef = useRef(null);
 
   const ContactMenu = () => (
     <div
@@ -37,6 +43,80 @@ export default function Header() {
     fontWeight: "500",
   };
 
+  const SearchMenu = () => {
+    const items = [
+      "Find Available Stands",
+      "Apply for a Stand",
+      "Council Support",
+      "FAQ & Help",
+    ];
+
+    return (
+      <div
+        style={{
+          position: "absolute",
+          top: "110%",
+          left: 0,
+          backgroundColor: "#ffffff",
+          color: "#1e3a8a",
+          padding: "10px",
+          borderRadius: "8px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          zIndex: 1000,
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          width: "100%",
+          maxWidth: "180px", // match input
+        }}
+      >
+        {items.map((item, idx) => (
+          <button
+            key={idx}
+            style={{
+              all: "unset",
+              cursor: "pointer",
+              padding: "6px 10px",
+              borderRadius: "6px",
+              backgroundColor: "#e0f2fe",
+              fontSize: "13px",
+              fontWeight: "500",
+              whiteSpace: "normal",
+              textAlign: "left",
+            }}
+            onClick={() => {
+              setSearchText(item);
+              setShowSearchMenu(false);
+            }}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    if (searchText.trim() === "") {
+      setShowSearchMenu(false);
+    } else {
+      setShowSearchMenu(true);
+    }
+  }, [searchText]);
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") {
+        setShowSearchMenu(false);
+        if (searchInputRef.current) {
+          searchInputRef.current.blur();
+        }
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <header
       style={{
@@ -55,22 +135,26 @@ export default function Header() {
       }}
     >
       <div>
-        <button
-          style={{
-            backgroundColor: "#1e3a8a",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: "999px",
-            border: "none",
-            fontWeight: "bold",
-            cursor: "pointer",
-            transition: "all 0.3s ease",
-          }}
-          onMouseEnter={(e) => (e.target.style.backgroundColor = "#2563eb")}
-          onMouseLeave={(e) => (e.target.style.backgroundColor = "#1e3a8a")}
-        >
-          Name
-        </button>
+      <button
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    padding: "6px 16px",
+    borderRadius: "999px",
+    border: "none",
+    backgroundColor: "#2563eb",
+    color: "white",
+    fontWeight: "600",
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "background-color 0.3s ease",
+  }}
+>
+  <img src={logo} alt="Logo" style={{ height: 28, width: 28, borderRadius: "50%" }} />
+  Stand Allocation
+</button>
+
       </div>
 
       <div
@@ -92,7 +176,7 @@ export default function Header() {
           </button>
         ))}
 
-        {/* Contact Us with dropdown */}
+        {/* Contact Us Dropdown */}
         <div
           style={{ position: "relative" }}
           onMouseEnter={() => setShowContactMenu(true)}
@@ -102,18 +186,28 @@ export default function Header() {
           {showContactMenu && <ContactMenu />}
         </div>
 
-        <input
-          placeholder="Search..."
-          style={{
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #bfdbfe",
-            backgroundColor: "#f8fafc",
-            color: "#1e293b",
-            outline: "none",
-            fontSize: "14px",
-          }}
-        />
+        {/* Search with dropdown */}
+        <div style={{ position: "relative" }}>
+          <input
+            ref={searchInputRef}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder="Search..."
+            style={{
+              padding: "8px 14px",
+              borderRadius: "8px",
+              border: "1px solid #bfdbfe",
+              backgroundColor: "#f8fafc",
+              color: "#1e293b",
+              outline: "none",
+              fontSize: "14px",
+              height: "36px",
+              width: "180px",
+              boxSizing: "border-box",
+            }}
+          />
+          {showSearchMenu && <SearchMenu />}
+        </div>
       </div>
     </header>
   );

@@ -112,11 +112,14 @@ alert("hiiiiiii")
 const containerStyle: React.CSSProperties = {
   maxWidth: "800px",
   margin: "auto",
+  marginLeft:260 ,
+  marginTop:20,
   padding: "30px",
   backgroundColor: "#f4faff",
   borderRadius: "12px",
   boxShadow: "0 0 10px rgba(0,0,0,0.1)",
   fontFamily: "Arial, sans-serif",
+  
 };
 
 const headerStyle: React.CSSProperties = {

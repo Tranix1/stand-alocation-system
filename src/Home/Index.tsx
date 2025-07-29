@@ -7,7 +7,7 @@ import image6 from "../assets/HomeImages/images.jpeg";
 
 export default function Home() {
   return (
-    <div style={{ fontFamily: "Segoe UI, sans-serif", background: "#f4f7fa", color: "#333" }}>
+    <div style={{ fontFamily: "Segoe UI, sans-serif", background: "#f4f7fa", color: "#333",marginLeft:190 }}>
       {/* Top Hero Section */}
       <div
         style={{

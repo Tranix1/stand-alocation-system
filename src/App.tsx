@@ -10,7 +10,7 @@ function App() {
     <>
   <Header/>
 
-    {/* <Home/> */}
+    <Home/>
     {/* <Form/> */}
     {/* <AvailableStands/> */}
     <SideBar/>

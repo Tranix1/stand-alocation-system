@@ -29,16 +29,19 @@ export default function SideBar() {
 
 // Adjusted Styles
 const sidebarStyle = {
+  position: 'fixed',
+  top: 65, // below the fixed header (adjust if your header height differs)
+  left: 8,
   width: '160px',
-  height: 'calc(109vh - 40px)', // if header is 60px tall
-//   marginTop: 1,
-  backgroundColor: '#2c50b5', // lighter than #1e3a8a for flow
+  height: 'calc(100vh - 70px)', // full height minus header
+  backgroundColor: '#2c50b5', // lighter than header
   color: '#ffffff',
   padding: '20px 16px',
   display: 'flex',
   flexDirection: 'column',
   fontFamily: 'Segoe UI, Roboto, sans-serif',
   boxShadow: '2px 0 8px rgba(0,0,0,0.1)',
+  zIndex: 999, // ensure it stays above content but under modals
 };
 
 const sectionHeadingStyle = {

@@ -10,7 +10,8 @@ export default function AvailableStands(){
   gap: '16px',
   justifyContent: 'space-between',
   maxWidth: '1000px',
-  margin: '0 auto'
+  marginLeft:210 ,
+  marginTop:13  
 }}>
   {[1, 2, 3].map((_, index) => (
     <div key={index} style={{
