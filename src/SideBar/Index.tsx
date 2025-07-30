@@ -34,7 +34,7 @@ const sidebarStyle = {
   left: 8,
   width: '160px',
   height: 'calc(100vh - 70px)', // full height minus header
-  backgroundColor: '#2c50b5', // lighter than header
+  backgroundColor: '#1d4ed8', // lighter than header
   color: '#ffffff',
   padding: '20px 16px',
   display: 'flex',

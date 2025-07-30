@@ -10,10 +10,10 @@ function App() {
     <>
   <Header/>
 
-    <Home/>
-    {/* <Form/> */}
+    {/* <Home/> */}
+    <Form/>
     {/* <AvailableStands/> */}
-    <SideBar/>
+    {/* <SideBar/> */}
 
     </>
   )

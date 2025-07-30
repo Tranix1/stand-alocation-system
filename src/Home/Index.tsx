@@ -7,55 +7,80 @@ import image6 from "../assets/HomeImages/images.jpeg";
 
 export default function Home() {
   return (
-    <div style={{ fontFamily: "Segoe UI, sans-serif", background: "#f4f7fa", color: "#333",marginLeft:190 }}>
-      {/* Top Hero Section */}
-      <div
-        style={{
-          background: "linear-gradient(to right, rgba(0,88,166,0.9), rgba(0,88,166,0.8))",
-          padding: "60px 30px",
-          color: "#fff",
-          textAlign: "center",
-          borderBottom: "5px solid #005bbb",
-        }}
-      >
-        <h1 style={{ fontSize: "2.7rem", marginBottom: 15 }}>
-          Harare City Council Stand Application
-        </h1>
-        <p style={{ maxWidth: 750, margin: "0 auto", fontSize: "1.1rem", lineHeight: 1.6 }}>
-          Your gateway to secure, affordable residential stands in Harare, Ruwa, and Norton.
-          Apply easily, join the official waiting list, and track your progress — all online.
-        </p>
-        <button
-          style={{
-            marginTop: 25,
-            padding: "12px 35px",
-            fontSize: "1rem",
-            background: "linear-gradient(135deg, #ffc107, #ff9800)",
-            color: "#000",
-            fontWeight: "bold",
-            border: "none",
-            borderRadius: 10,
-            cursor: "pointer",
-            boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
-          }}
-        >
-          Apply Now
-        </button>
-      </div>
+    <div style={{ fontFamily: "Segoe UI, sans-serif", background: "#f4f7fa", color: "#333", }}>
+    
 
       {/* Image 1 */}
-      <div style={{ display: "flex", justifyContent: "center", marginTop: 40 }}>
-        <img
-          src={image1}
-          alt="Harare Council"
-          style={{
-            width: "90%",
-            maxWidth: 900,
-            borderRadius: 15,
-            boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
-          }}
-        />
-      </div>
+     
+<div
+  style={{
+    position: "relative",
+    display: "flex",
+    justifyContent: "center",
+    marginTop: 10,
+    backgroundColor: "#e0f2fe",
+    padding: 30,
+    borderRadius: 20,
+  }}
+>
+  {/* Image */}
+  <img
+    src={image1}
+    alt="Harare Council"
+    style={{
+      width: "100%",
+      maxWidth: 850, // reduced from 900+
+      borderRadius: 15,
+      boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+    }}
+  />
+
+  {/* Transparent Text Overlay */}
+  <div
+    style={{
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      background: "rgba(0, 88, 166, 0.8)", // more transparent
+      padding: "30px 20px",
+      width: "75%",
+      maxWidth: 650,
+      color: "#fff",
+      textAlign: "center",
+      borderBottom: "3px solid #005bbb",
+      borderRadius: 12,
+      boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+    }}
+  >
+    <h1 style={{ fontSize: "1.9rem", marginBottom: 10 }}>
+      Harare City Council Stand Application
+    </h1>
+    <p style={{ fontSize: "1rem", lineHeight: 1.5 }}>
+      Your gateway to secure, affordable residential stands in Harare, Ruwa, and Norton.
+      Apply easily, join the official waiting list, and track your progress — all online.
+    </p>
+    <button
+      style={{
+        marginTop: 20,
+        padding: "10px 25px",
+        fontSize: "1rem",
+        background: "linear-gradient(135deg, #ffc107, #ff9800)",
+        color: "#000",
+        fontWeight: "bold",
+        border: "none",
+        borderRadius: 8,
+        cursor: "pointer",
+        boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
+      }}
+    >
+      Apply Now
+    </button>
+  </div>
+</div>
+
+
+      
 
       {/* Process Explanation Section */}
       <div style={{ textAlign: "center", padding: "50px 20px", backgroundColor: "#ffffff" }}>
