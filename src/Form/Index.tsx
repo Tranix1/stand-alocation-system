@@ -5,7 +5,7 @@ import Modal from "react-modal";
 
 // Add modal root
 Modal.setAppElement("#root");
-
+import { useLocation } from "react-router-dom";
 export default function ApplicationForm() {
 
 
@@ -83,8 +83,63 @@ const [paymentData, setPaymentData] = useState({ phone: "", method: "" });
 </Modal>
 
 
+// ...existing code...
 
+const [uploads, setUploads] = useState({
+  idFront: null as File | null,
+  idBack: null as File | null,
+  proofResidence: null as File | null,
+  affidavit: null as File | null,
+  marriageCert: null as File | null,
+});
 
+const handleFileChange = (key: keyof typeof uploads, file: File | null) => {
+  setUploads((prev) => ({ ...prev, [key]: file }));
+};
+
+const renderUpload = (label: string, key: keyof typeof uploads) => (
+  <div style={{ textAlign: "center", margin: "0 12px" }}>
+    <p style={{ fontWeight: "bold", marginBottom: 8 }}>{label}</p>
+    <label
+      style={{
+        display: "inline-block",
+        padding: "10px 18px",
+        background: "#e6f0ff",
+        color: "#0c4da2",
+        borderRadius: "8px",
+        border: "1px solid #0c4da2",
+        cursor: "pointer",
+        fontWeight: 500,
+        marginBottom: "8px",
+      }}
+    >
+      {uploads[key] ? "Change Image" : "Select Image"}
+      <input
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={(e) =>
+          handleFileChange(key, e.target.files && e.target.files[0] ? e.target.files[0] : null)
+        }
+      />
+    </label>
+    {uploads[key] && (
+      <img
+        src={URL.createObjectURL(uploads[key]!)}
+        alt={label}
+        style={{
+          marginTop: 8,
+          width: 90,
+          height: 70,
+          objectFit: "cover",
+          borderRadius: "6px",
+          border: "1px solid #0c4da2",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+        }}
+      />
+    )}
+  </div>
+);
 
 
 
@@ -183,6 +238,10 @@ const [paymentData, setPaymentData] = useState({ phone: "", method: "" });
     }
   };
 
+
+  const location = useLocation();
+  const stand = location.state;
+
   return (
     <div style={containerStyle}>
       {showPaymentModal && (
@@ -245,6 +304,55 @@ const [paymentData, setPaymentData] = useState({ phone: "", method: "" });
     </div>
   </div>
 )}
+
+{stand ? (
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "24px",
+      background: "#e6f0ff",
+      borderRadius: "10px",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+      padding: "18px 24px",
+      marginBottom: "28px",
+      border: "1px solid #bcd4f7",
+    }}
+  >
+    <img
+      src={stand.image}
+      alt={`Stand in ${stand.location}`}
+      style={{
+        height: "110px",
+        width: "160px",
+        objectFit: "cover",
+        borderRadius: "8px",
+        border: "2px solid #0c4da2",
+        background: "#fff",
+      }}
+    />
+    <div style={{ flex: 1 }}>
+      <h3 style={{ margin: "0 0 10px", color: "#0c4da2", fontSize: "18px" }}>
+        Stand in {stand.location}
+      </h3>
+      <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "15px" }}>
+        <li><strong>Area:</strong> {stand.area}</li>
+        <li><strong>Road:</strong> {stand.road}</li>
+        <li><strong>Servicing:</strong> {stand.servicing}</li>
+        <li><strong>Water & Sewer:</strong> {stand.waterSewer}</li>
+        <li><strong>Electricity:</strong> {stand.electricity}</li>
+        <li style={{ fontWeight: "bold", color: "#007b00", marginTop: "8px" }}>
+          Available: {stand.available} Stands
+        </li>
+      </ul>
+    </div>
+  </div>
+) : (
+  <p>No stand selected.</p>
+)}
+
+
+
 
       <h2 style={headerStyle}>Harare City Council Stand Application Form</h2>
 
@@ -327,6 +435,22 @@ const [paymentData, setPaymentData] = useState({ phone: "", method: "" });
       <p>I declare that the above information is correct and true.</p>
       <input type="date" name="declarationDate" style={inputStyle} onChange={handleChange} value={formData.declarationDate} />
       <input name="applicantSignature" placeholder="Applicant Signature" style={inputStyle} onChange={handleChange} value={formData.applicantSignature} />
+
+
+
+        // ...inside your return, replace the document section with:
+<div style={{ display: "flex", justifyContent: "center", marginTop: "20px", gap: "18px" }}>
+  {renderUpload("Id front", "idFront")}
+  {renderUpload("ID back", "idBack")}
+  {renderUpload("Proof of residence", "proofResidence")}
+  {renderUpload("Affidavit for proof of res if needed", "affidavit")}
+  {renderUpload("Marriage certificate", "marriageCert")}
+</div>
+
+
+
+
+
 
       <p style={{ fontSize: 12, color: "red", marginTop: 30 }}>
         * False information leads to disqualification or repossession of the stand.

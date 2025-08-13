@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import logo from "./assets/HomeImages/images (1).jpeg";
 
@@ -8,6 +9,7 @@ export default function Header() {
   const [showSearchMenu, setShowSearchMenu] = useState(false);
 
   const searchInputRef = useRef(null);
+  const navigate = useNavigate();
 
   const ContactMenu = () => (
     <div
@@ -67,7 +69,7 @@ export default function Header() {
           flexDirection: "column",
           gap: "10px",
           width: "100%",
-          maxWidth: "180px", // match input
+          maxWidth: "180px",
         }}
       >
         {items.map((item, idx) => (
@@ -105,11 +107,11 @@ export default function Header() {
   }, [searchText]);
 
   useEffect(() => {
-    function handleKeyDown(e) {
+    function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setShowSearchMenu(false);
         if (searchInputRef.current) {
-          searchInputRef.current.blur();
+          (searchInputRef.current as HTMLInputElement).blur();
         }
       }
     }
@@ -135,26 +137,25 @@ export default function Header() {
       }}
     >
       <div>
-      <button
-  style={{
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    padding: "6px 16px",
-    borderRadius: "999px",
-    border: "none",
-    backgroundColor: "#2563eb",
-    color: "white",
-    fontWeight: "600",
-    fontSize: "16px",
-    cursor: "pointer",
-    transition: "background-color 0.3s ease",
-  }}
->
-  <img src={logo} alt="Logo" style={{ height: 28, width: 28, borderRadius: "50%" }} />
-  Stand Allocation
-</button>
-
+        <button
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            padding: "6px 16px",
+            borderRadius: "999px",
+            border: "none",
+            backgroundColor: "#2563eb",
+            color: "white",
+            fontWeight: "600",
+            fontSize: "16px",
+            cursor: "pointer",
+            transition: "background-color 0.3s ease",
+          }}
+        >
+          <img src={logo} alt="Logo" style={{ height: 28, width: 28, borderRadius: "50%" }} />
+          Stand Allocation
+        </button>
       </div>
 
       <div
@@ -165,16 +166,30 @@ export default function Header() {
           position: "relative",
         }}
       >
-        {["Home", "Available Stands", "Apply Stand"].map((label, idx) => (
-          <button
-            key={idx}
-            style={buttonStyle}
-            onMouseEnter={(e) => (e.target.style.textDecoration = "underline")}
-            onMouseLeave={(e) => (e.target.style.textDecoration = "none")}
-          >
-            {label}
-          </button>
-        ))}
+        <button
+          style={buttonStyle}
+          onClick={() => navigate("/")}
+          onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+          onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+        >
+          Home
+        </button>
+        <button
+          style={buttonStyle}
+          onClick={() => navigate("/stands")}
+          onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+          onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+        >
+          Available Stands
+        </button>
+        <button
+          style={buttonStyle}
+          onClick={() => navigate("/form")}
+          onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+          onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+        >
+          Apply Stand
+        </button>
 
         {/* Contact Us Dropdown */}
         <div
@@ -212,6 +227,7 @@ export default function Header() {
     </header>
   );
 }
+
 
 const buttonStyle = {
   all: "unset",
