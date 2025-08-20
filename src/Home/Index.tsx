@@ -4,8 +4,11 @@ import image3 from "../assets/HomeImages/image-1.webp";
 // import image4 from "../assets/HomeImages/images (1).jpeg";
 import image5 from "../assets/HomeImages/images (2).jpeg";
 import image6 from "../assets/HomeImages/images.jpeg";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+    const navigate = useNavigate();
+
   return (
     <div style={{ fontFamily: "Segoe UI, sans-serif", background: "#f4f7fa", color: "#333", }}>
     
@@ -73,6 +76,7 @@ export default function Home() {
         cursor: "pointer",
         boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
       }}
+      onClick={() => navigate("/form")}
     >
       Apply Now
     </button>
@@ -137,6 +141,7 @@ export default function Home() {
             borderRadius: 10,
             cursor: "pointer",
           }}
+          onClick={() => navigate("/form")}
         >
           Start Application
         </button>
@@ -183,6 +188,7 @@ export default function Home() {
             fontWeight: "bold",
             cursor: "pointer",
           }}
+          onClick={() => navigate("/form")}
         >
           Apply for a Stand Now
         </button>

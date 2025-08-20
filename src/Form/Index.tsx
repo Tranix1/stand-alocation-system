@@ -2,18 +2,21 @@ import React, { useState } from "react";
 import { db } from "../config/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import Modal from "react-modal";
-
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../config/firebase"; // a
 // Add modal root
 Modal.setAppElement("#root");
 import { useLocation } from "react-router-dom";
+
+import handleMakePayment from "../../utils/Pyament"
+
+
 export default function ApplicationForm() {
 
 
 const [showPaymentModal, setShowPaymentModal] = useState(false);
 const [paymentStage, setPaymentStage] = useState<"input" | "processing" | "success">("input");
 const [paymentData, setPaymentData] = useState({ phone: "", method: "" });
-
-
 
 
 <Modal isOpen={showPaymentModal} onRequestClose={() => setShowPaymentModal(false)} style={{
@@ -141,11 +144,6 @@ const renderUpload = (label: string, key: keyof typeof uploads) => (
   </div>
 );
 
-
-
-
-
-
   const [formData, setFormData] = useState({
     fullName: "",
     sex: "",
@@ -208,6 +206,24 @@ const renderUpload = (label: string, key: keyof typeof uploads) => (
   //   applicantSignature: "John Doe",
   // });
 
+
+    const [errorFields, setErrorFields] = useState<string[]>([]);
+  const [showErrorOverlay, setShowErrorOverlay] = useState(false);
+
+//  const requiredFields = [
+//     "fullName", "sex", "idNumber", "dob", "salary", "maritalStatus",
+//     "address", "tenureStatus",
+//   ];
+
+const requiredFields = [
+    "fullName",
+  ];
+  const validateForm = () => {
+    const missing = requiredFields.filter((field) => !formData[field]);
+    setErrorFields(missing);
+    return missing.length === 0;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -217,20 +233,58 @@ const renderUpload = (label: string, key: keyof typeof uploads) => (
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
+
+async function uploadImages(uploads: Record<string, File | null>, fullName: string) {
+  const imageLinks: Record<string, string> = {};
+  for (const key of Object.keys(uploads)) {
+    const file = uploads[key];
+    if (file) {
+      const storageRef = ref(storage, `applications/${fullName}_${Date.now()}/${key}`);
+      await uploadBytes(storageRef, file);
+      imageLinks[key] = await getDownloadURL(storageRef);
+    } else {
+      imageLinks[key] = ""; // or null if you prefer
+    }
+  }
+  return imageLinks;
+}
+
+
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setShowPaymentModal(true)
+       if (!validateForm()) {
+      setShowErrorOverlay(true);
+      return;
+    }
+
+
+ const imageLinks = await uploadImages(uploads, formData.fullName);
+
+  // Set variables for each image link
+  const idFrontLink = imageLinks.idFront;
+  const idBackLink = imageLinks.idBack;
+  // const proofResidenceLink = imageLinks.proofResidence;
+  // const affidavitLink = imageLinks.affidavit;
+  // const marriageCertLink = imageLinks.marriageCert;
+
+
+
+
     const paymentData = {
   fullName: "Jane Chikomo",
   phone: "0771234567",
   method: "ecocash",
   amount: 10,
   status: "approved",
-  createdAt: "2025-07-30T08:12:00.000Z"
+  createdAt: "2025-07-30T08:12:00.000Z",
+  idFrontLink ,
+  idBackLink
+
 }
 
     try {
       const docRef = await addDoc(collection(db, "Payments"),paymentData );
+      const docRefS = await addDoc(collection(db, "applications"),formData );
       alert("done")
     } catch (error) {
       console.error("Error adding document: ", error);
@@ -238,12 +292,40 @@ const renderUpload = (label: string, key: keyof typeof uploads) => (
     }
   };
 
+ 
+
 
   const location = useLocation();
   const stand = location.state;
 
+  console.log("Selected stand:", stand);
+
   return (
     <div style={containerStyle}>
+
+
+{showErrorOverlay && (
+  <div style={overlayStyle}>
+    <div style={modalContentStyle}>
+      <h3 style={{ color: "#d32f2f" }}>Missing Required Fields</h3>
+      <ul style={{ color: "#d32f2f", textAlign: "left" }}>
+        {errorFields.map((field) => (
+          <li key={field}>{field.replace(/([A-Z])/g, " $1")}</li>
+        ))}
+      </ul>
+      <button
+        style={submitBtnStyle}
+        onClick={() => setShowErrorOverlay(false)}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
+
+
+      
       {showPaymentModal && (
   <div style={overlayStyle}>
     <div style={modalContentStyle}>
@@ -268,10 +350,12 @@ const renderUpload = (label: string, key: keyof typeof uploads) => (
           <button
             style={submitBtnStyle}
             onClick={() => {
-              setPaymentStage("processing");
-              setTimeout(() => {
-                setPaymentStage("success");
-              }, 2000);
+              // setPaymentStage("processing");
+              // setTimeout(() => {
+              //   setPaymentStage("success");
+              // }, 2000);
+
+              handleMakePayment(10 , "stand Application Payment" ,setPaymentStage)
             }}
           >
             Submit Payment
@@ -366,7 +450,7 @@ const renderUpload = (label: string, key: keyof typeof uploads) => (
 
       <input name="idNumber" placeholder="ID Number" style={inputStyle} onChange={handleChange} value={formData.idNumber} />
       <input type="date" name="dob" style={inputStyle} onChange={handleChange} value={formData.dob} />
-      <input name="salary" placeholder="Monthly Salary (USD)" style={inputStyle} onChange={handleChange} value={formData.salary} />
+      <input name="salary" placeholder="Monthly Salary (USD)" type="number" style={inputStyle} onChange={handleChange} value={formData.salary} />
 
       <label style={sectionLabel}>Marital Status</label>
       <div style={buttonGroupStyle}>
@@ -438,7 +522,6 @@ const renderUpload = (label: string, key: keyof typeof uploads) => (
 
 
 
-        // ...inside your return, replace the document section with:
 <div style={{ display: "flex", justifyContent: "center", marginTop: "20px", gap: "18px" }}>
   {renderUpload("Id front", "idFront")}
   {renderUpload("ID back", "idBack")}
@@ -448,15 +531,11 @@ const renderUpload = (label: string, key: keyof typeof uploads) => (
 </div>
 
 
-
-
-
-
       <p style={{ fontSize: 12, color: "red", marginTop: 30 }}>
         * False information leads to disqualification or repossession of the stand.
       </p>
 
-      <button style={submitBtnStyle} onClick={handleSubmit}>Submit and Make payment</button>
+      <button style={submitBtnStyle} onClick={()=>  setShowPaymentModal(true)}>Submit and Make payment</button>
     </div>
   );
 }
@@ -465,7 +544,7 @@ const renderUpload = (label: string, key: keyof typeof uploads) => (
 const containerStyle: React.CSSProperties = {
   maxWidth: "800px",
   margin: "auto",
-  marginLeft:160 ,
+  alignSelf:"center",
   marginTop:20,
   padding: "30px",
   backgroundColor: "#f4faff",

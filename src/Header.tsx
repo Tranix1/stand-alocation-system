@@ -35,7 +35,7 @@ export default function Header() {
     </div>
   );
 
-  const menuButtonStyle = {
+  const menuButtonStyle: React.CSSProperties = {
     all: "unset",
     cursor: "pointer",
     padding: "8px 12px",
@@ -152,6 +152,8 @@ export default function Header() {
             cursor: "pointer",
             transition: "background-color 0.3s ease",
           }}
+          onClick={() => navigate("/")}
+
         >
           <img src={logo} alt="Logo" style={{ height: 28, width: 28, borderRadius: "50%" }} />
           Stand Allocation
@@ -228,8 +230,7 @@ export default function Header() {
   );
 }
 
-
-const buttonStyle = {
+const buttonStyle: React.CSSProperties = {
   all: "unset",
   cursor: "pointer",
   color: "white",
