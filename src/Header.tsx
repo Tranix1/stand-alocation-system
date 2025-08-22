@@ -47,7 +47,7 @@ export default function Header() {
 
   const SearchMenu = () => {
     const items = [
-      "Find Available Stands",
+      "Ruwa $30000 500x700m²",
       "Apply for a Stand",
       "Council Support",
       "FAQ & Help",
@@ -72,6 +72,7 @@ export default function Header() {
           maxWidth: "180px",
         }}
       >
+        <p style={{margin:0,alignSelf:"center"}}>Available Stands</p>
         {items.map((item, idx) => (
           <button
             key={idx}
@@ -88,7 +89,8 @@ export default function Header() {
             }}
             onClick={() => {
               setSearchText(item);
-              setShowSearchMenu(false);
+              navigate("/form") 
+              // setShowSearchMenu(false);
             }}
           >
             {item}
@@ -191,7 +193,7 @@ export default function Header() {
           onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
         >
           Apply Stand
-        </button>
+        </button> 
 
         {/* Contact Us Dropdown */}
         <div

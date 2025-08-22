@@ -12,8 +12,25 @@ const stands = [
     electricity: "Nearby Power Line",
     available: 10,
     image,
+  }, {
+    location: "Norton",
+    area: "300 x 500 m²",
+    road: "Available",
+    servicing: "NotServiced",
+    waterSewer: "Connected",
+    electricity: "Nearby Power Line",
+    available: 10,
+    image,
+  }, {
+    location: "Harare Warren Park ",
+    area: "300 x 500 m²",
+    road: "Available",
+    servicing: "Half serviced",
+    waterSewer: "Connected",
+    electricity: "Nearby Power Line",
+    available: 10,
+    image,
   },
-  // Add more stand objects here
 ];
 
 function StandCard({ stand }: { stand: typeof stands[0] }) {
@@ -59,7 +76,7 @@ function StandCard({ stand }: { stand: typeof stands[0] }) {
             cursor: 'pointer'
           }}
           aria-label={`Apply for stand in ${stand.location}`}
-          onClick={() => navigate("/form", { state: stand })}
+          onClick={() => navigate("/form", { state: stand })  }
         >
           Apply Now
         </button>

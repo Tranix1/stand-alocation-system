@@ -143,7 +143,8 @@ const renderUpload = (label: string, key: keyof typeof uploads) => (
     )}
   </div>
 );
-
+ const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [infoIsTrue, setInfoIsTrue] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     sex: "",
@@ -164,8 +165,7 @@ const renderUpload = (label: string, key: keyof typeof uploads) => (
     contactPhone: "",
     staffNo: "",
     workNature: "",
-    date: "",
-    employerSignature: "",
+    numverOChildren:"" ,
     childName: "",
     childSex: "",
     childBirthNo: "",
@@ -215,21 +215,69 @@ const renderUpload = (label: string, key: keyof typeof uploads) => (
 //     "address", "tenureStatus",
 //   ];
 
-const requiredFields = [
-    "fullName",
-  ];
-  const validateForm = () => {
-    const missing = requiredFields.filter((field) => !formData[field]);
-    setErrorFields(missing);
-    return missing.length === 0;
-  };
+
+
+const today = new Date();
+const eighteenYearsAgo = new Date(
+  today.getFullYear() - 18,
+  today.getMonth(),
+  today.getDate()
+);
+const maxDate = eighteenYearsAgo.toISOString().split("T")[0];
+
+
+const requiredFields = ["fullName", "dob"];
+
+const validateForm = () => {
+  let missing: string[] = [];
+
+  // check required fields
+  requiredFields.forEach((field) => {
+    if (!formData[field]) {
+      missing.push(field);
+    }
+  });
+
+  // check length condition for fullName
+  if (formData.fullName && formData.fullName.trim().length < 6) {
+    missing.push("fullName");
+  }
+
+  // check age (must be >= 19)
+  if (formData.dob) {
+    const dob = new Date(formData.dob);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    const dayDiff = today.getDate() - dob.getDate();
+
+    // adjust age if birthday hasn't occurred yet this year
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+
+    if (age < 19) {
+      missing.push("dob");
+    }
+  }
+
+  setErrorFields(missing);
+  return missing.length === 0;
+};
+
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+      if (name === "salary" && value.length > 6) return;
+      if (name === "contactPhone" && value.length > 10) return;
+      
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSelect = (key: string, value: string) => {
+
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -252,20 +300,18 @@ async function uploadImages(uploads: Record<string, File | null>, fullName: stri
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-       if (!validateForm()) {
-      setShowErrorOverlay(true);
-      return;
-    }
+    
 
+    
 
  const imageLinks = await uploadImages(uploads, formData.fullName);
 
   // Set variables for each image link
   const idFrontLink = imageLinks.idFront;
   const idBackLink = imageLinks.idBack;
-  // const proofResidenceLink = imageLinks.proofResidence;
-  // const affidavitLink = imageLinks.affidavit;
-  // const marriageCertLink = imageLinks.marriageCert;
+  const proofResidenceLink = imageLinks.proofResidence;
+  const affidavitLink = imageLinks.affidavit;
+  const marriageCertLink = imageLinks.marriageCert;
 
 
 
@@ -440,41 +486,72 @@ async function uploadImages(uploads: Record<string, File | null>, fullName: stri
 
       <h2 style={headerStyle}>Harare City Council Stand Application Form</h2>
 
-      <input name="fullName" placeholder="Full Name" style={inputStyle} onChange={handleChange} value={formData.fullName} />
+      <input name="fullName" placeholder="Full Name" maxLength={35} style={inputStyle} onChange={handleChange} value={formData.fullName} />
 
       <select name="sex" style={inputStyle} onChange={handleChange} value={formData.sex}>
         <option value="">Select Sex</option>
         <option>Male</option>
         <option>Female</option>
       </select>
+      <input name="idNumber" placeholder="ID Number" style={inputStyle}  maxLength={12} onChange={handleChange} value={formData.idNumber} />
+  <label style={sectionLabel}>Date OF Birth</label>
+      {/* <input type="date" name="dob" style={inputStyle} onChange={handleChange} value={formData.dob} /> */}
+<input
+  type="date"
+  name="dob"
+  style={inputStyle}
+  onChange={handleChange}
+  value={formData.dob}
+  max={maxDate}   // restricts to 18+
+/>
 
-      <input name="idNumber" placeholder="ID Number" style={inputStyle} onChange={handleChange} value={formData.idNumber} />
-      <input type="date" name="dob" style={inputStyle} onChange={handleChange} value={formData.dob} />
-      <input name="salary" placeholder="Monthly Salary (USD)" type="number" style={inputStyle} onChange={handleChange} value={formData.salary} />
+
+
+
+      <input name="salary" placeholder="Monthly Salary (USD)" maxLength={6} type="number" style={inputStyle} onChange={handleChange} value={formData.salary} />
 
       <label style={sectionLabel}>Marital Status</label>
-      <div style={buttonGroupStyle}>
-        {["Single", "Married", "Divorced", "Widowed"].map((status) => (
-          <button type="button" key={status} style={buttonStyle} onClick={() => handleSelect("maritalStatus", status)}>
-            {status}
-          </button>
-        ))}
-      </div>
+<div style={buttonGroupStyle}>
+  {["Single", "Married", "Divorced", "Widowed"].map((status) => (
+    <button
+      type="button"
+      key={status}
+      style={
+        formData.maritalStatus === status
+          ? selectedButtonStyle   // ✅ if selected
+          : buttonStyle           // default
+      }
+      onClick={() => handleSelect("maritalStatus", status)}
+    >
+      {status}
+    </button>
+  ))}
+</div>
 
+{formData.maritalStatus==="Married" &&<div>  
       <input name="spouseFirstName" placeholder="Spouse First Name" style={inputStyle} onChange={handleChange} value={formData.spouseFirstName} />
       <input name="spouseSurname" placeholder="Spouse Surname" style={inputStyle} onChange={handleChange} value={formData.spouseSurname} />
       <input name="spouseId" placeholder="Spouse ID" style={inputStyle} onChange={handleChange} value={formData.spouseId} />
-      <input name="spouseSalary" placeholder="Spouse Monthly Salary" style={inputStyle} onChange={handleChange} value={formData.spouseSalary} />
-
+      <input name="spouseSalary" placeholder="Spouse Monthly Salary" style={inputStyle} onChange={handleChange}  value={formData.spouseSalary} />
+</div>}
       <label style={sectionLabel}>Current Address</label>
       <textarea name="address" placeholder="Current Address" style={textareaStyle} onChange={handleChange} value={formData.address}></textarea>
 
       <label style={sectionLabel}>Tenure Status</label>
       <div style={buttonGroupStyle}>
         {["Lodger", "Boarder", "Tenant", "Tied Tenant"].map((type) => (
-          <button type="button" key={type} style={buttonStyle} onClick={() => handleSelect("tenureStatus", type)}>
-            {type}
-          </button>
+           <button
+      type="button"
+      key={type}
+      style={
+        formData.tenureStatus === type
+          ? selectedButtonStyle   // ✅ if selected
+          : buttonStyle           // default
+      }
+      onClick={() => handleSelect("tenureStatus", type)}
+    >
+      {type}
+    </button>
         ))}
       </div>
 
@@ -490,22 +567,53 @@ async function uploadImages(uploads: Record<string, File | null>, fullName: stri
       <label style={sectionLabel}>Employment Details</label>
       <div style={buttonGroupStyle}>
         {["City of Harare", "Civil Servant", "Other"].map((emp) => (
-          <button type="button" key={emp} style={buttonStyle} onClick={() => handleSelect("employmentType", emp)}>
-            {emp}
-          </button>
+       
+  <button
+      type="button"
+      key={emp}
+      style={
+        formData.tenureStatus === emp
+          ? selectedButtonStyle   // ✅ if selected
+          : buttonStyle           // default
+      }
+      onClick={() => handleSelect("tenureStatus", emp)}
+    >
+      {emp}
+    </button>
+          
         ))}
       </div>
 
       <input name="employerName" placeholder="Employer Name" style={inputStyle} onChange={handleChange} value={formData.employerName} />
       <textarea name="employerAddress" placeholder="Employer Address" style={textareaStyle} onChange={handleChange} value={formData.employerAddress}></textarea>
-      <input name="contactPhone" placeholder="Contact Phone/Cell" style={inputStyle} onChange={handleChange} value={formData.contactPhone} />
-      <input name="staffNo" placeholder="Staff No." style={inputStyle} onChange={handleChange} value={formData.staffNo} />
+      <input name="contactPhone" type="number" placeholder="Contact Phone/Cell (07000000) " style={inputStyle} onChange={handleChange} value={formData.contactPhone} />
+      <input name="staffNo" placeholder="Staff ID." maxLength={20} style={inputStyle} onChange={handleChange} value={formData.staffNo} />
       <input name="workNature" placeholder="Nature of Work" style={inputStyle} onChange={handleChange} value={formData.workNature} />
-      <input type="date" name="date" style={inputStyle} onChange={handleChange} value={formData.date} />
-      <input name="employerSignature" placeholder="Employer Signature" style={inputStyle} onChange={handleChange} value={formData.employerSignature} />
 
+
+         <label style={sectionLabel}>Employment Details</label>
+      <div style={buttonGroupStyle}>
+        {["One", "Many", "None"].map((emp) => (
+       
+  <button
+      type="button"
+      key={emp}
+      style={
+        formData.numverOChildren === emp
+          ? selectedButtonStyle   // ✅ if selected
+          : buttonStyle           // default
+      }
+      onClick={() => handleSelect("numverOChildren", emp)}
+    >
+      {emp}
+    </button>
+          
+        ))}
+      </div>
+
+       { formData.numverOChildren !== "None"&& formData.numverOChildren !=="" && <div> 
       <label style={sectionLabel}>Children Under 18</label>
-      <input name="childName" placeholder="Child Full Name" style={inputStyle} onChange={handleChange} value={formData.childName} />
+      <input name="childName" placeholder="Child Full Name" maxLength={25} style={inputStyle} onChange={handleChange} value={formData.childName} />
       <select name="childSex" style={inputStyle} onChange={handleChange} value={formData.childSex}>
         <option value="">Sex</option>
         <option>Male</option>
@@ -514,20 +622,38 @@ async function uploadImages(uploads: Record<string, File | null>, fullName: stri
       <input name="childBirthNo" placeholder="Birth Entry No." style={inputStyle} onChange={handleChange} value={formData.childBirthNo} />
       <input name="childAge" placeholder="Age" style={inputStyle} onChange={handleChange} value={formData.childAge} />
       <input type="date" name="childDob" style={inputStyle} onChange={handleChange} value={formData.childDob} />
-
+      <button>select Another</button>
+</div>}
       <label style={sectionLabel}>Declaration</label>
-      <p>I declare that the above information is correct and true.</p>
-      <input type="date" name="declarationDate" style={inputStyle} onChange={handleChange} value={formData.declarationDate} />
-      <input name="applicantSignature" placeholder="Applicant Signature" style={inputStyle} onChange={handleChange} value={formData.applicantSignature} />
+<div style={{ marginTop: "16px" }}>
+      <label style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
+        <input
+          type="checkbox"
+          checked={acceptedTerms}
+          onChange={() => setAcceptedTerms(!acceptedTerms)}
+          style={{ marginRight: "8px" }}
+        />
+        I accept the Terms and Conditions
+      </label>
 
+      <label style={{ display: "flex", alignItems: "center" }}>
+        <input
+          type="checkbox"
+          checked={infoIsTrue}
+          onChange={() => setInfoIsTrue(!infoIsTrue)}
+          style={{ marginRight: "8px" }}
+        />
+        I declare that the above information is correct and true
+      </label>
+    </div>
 
 
 <div style={{ display: "flex", justifyContent: "center", marginTop: "20px", gap: "18px" }}>
   {renderUpload("Id front", "idFront")}
   {renderUpload("ID back", "idBack")}
   {renderUpload("Proof of residence", "proofResidence")}
-  {renderUpload("Affidavit for proof of res if needed", "affidavit")}
-  {renderUpload("Marriage certificate", "marriageCert")}
+  {renderUpload("Affidavit for proof of res", "affidavit")}
+  {formData.maritalStatus==="Married"&& renderUpload("Marriage certificate", "marriageCert")}
 </div>
 
 
@@ -535,7 +661,14 @@ async function uploadImages(uploads: Record<string, File | null>, fullName: stri
         * False information leads to disqualification or repossession of the stand.
       </p>
 
-      <button style={submitBtnStyle} onClick={()=>  setShowPaymentModal(true)}>Submit and Make payment</button>
+      <button style={submitBtnStyle} onClick={()=>{    if (!validateForm()) {
+      setShowErrorOverlay(true);
+      if(!uploads.affidavit || !uploads.idBack || !uploads.idFront  || !uploads.proofResidence || (!uploads.marriageCert && formData.maritalStatus ==="" )){
+  alert("Select all required images to proceed")
+  return
+}
+      return;
+    } setShowPaymentModal(true)} }>Submit and Make payment</button>
     </div>
   );
 }
@@ -596,6 +729,12 @@ const buttonStyle: React.CSSProperties = {
   backgroundColor: "#e6f0ff",
   color: "#0c4da2",
   cursor: "pointer",
+};
+const selectedButtonStyle: React.CSSProperties = {
+  ...buttonStyle,
+  background: "#4285f4",   // highlight color
+  color: "#fff",
+  border: "1px solid #4285f4",
 };
 
 const submitBtnStyle: React.CSSProperties = {
